@@ -4,7 +4,7 @@ LICENSE = "MIT"
 inherit core-image
 
 export IMAGE_BASENAME = "custom-image"
-MACHINE_NAME ?= "stm32mp1"
+MACHINE_NAME ?= "qemuarm"
 
 IMAGE_NAME = "${MACHINE_NAME}_${IMAGE_BASENAME}"
 
