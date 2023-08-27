@@ -1,33 +1,29 @@
-SUMMARY = "The canonical example of init scripts"
-SECTION = "base"
-DESCRIPTION = "This recipe is a canonical example of init scripts"
-LICENSE = "GPL-2.0-only"
-LIC_FILES_CHKSUM = "file://${WORKDIR}/COPYRIGHT;md5=349c872e0066155e1818b786938876a4"
+SUMMARY             = "Install custom ntpd init script"
+LICENSE             = "MIT"
+LIC_FILES_CHKSUM    = "file://${COREBASE}/meta/COPYING.MIT;md5=3da9cfbcb788c80a0384361b4de20420"
+PR                  = "r0"
 
-SRC_URI = "     \
-    file://ntpd \
+# Define needed files
+SRC_URI = "         \
+    file://ntpd     \
+    file://ntp.conf \
 "
 
-S = "${WORKDIR}"
-
-do_compile () {
-	${CC} ${CFLAGS} ${LDFLAGS} ${WORKDIR}/skeleton_test.c -o ${WORKDIR}/skeleton-test
+# Install the init script and config file
+do_install() {
+    install -d ${D}${sysconfdir}/init.d
+    install -d ${D}${sysconfdir}/rc3.d
+    install -d ${D}${sysconfdir}/rc4.d
+    install -d ${D}${sysconfdir}/rc5.d
+    install -m 0755 ${WORKDIR}/ntpd ${D}${sysconfdir}/init.d/
+    install -m 0644 ${WORKDIR}/ntp.conf ${D}${sysconfdir}/ntp.conf
+    ln -sf ../init.d/ntpd ${D}${sysconfdir}/rc3.d/S99ntpd
+    ln -sf ../init.d/ntpd ${D}${sysconfdir}/rc4.d/S99ntpd
+    ln -sf ../init.d/ntpd ${D}${sysconfdir}/rc5.d/S99ntpd
 }
 
-do_install () {
-	install -d ${D}${sysconfdir}/init.d
-	cat ${WORKDIR}/skeleton | \
-	  sed -e 's,/etc,${sysconfdir},g' \
-	      -e 's,/usr/sbin,${sbindir},g' \
-	      -e 's,/var,${localstatedir},g' \
-	      -e 's,/usr/bin,${bindir},g' \
-	      -e 's,/usr,${prefix},g' > ${D}${sysconfdir}/init.d/skeleton
-	chmod a+x ${D}${sysconfdir}/init.d/skeleton
-
-	install -d ${D}${sbindir}
-	install -m 0755 ${WORKDIR}/skeleton-test ${D}${sbindir}/
-}
-
-RDEPENDS:${PN} = "initscripts"
-
-CONFFILES:${PN} += "${sysconfdir}/init.d/skeleton"
+# Add the config file to the package
+FILES_${PN} += "                \
+    ${sysconfdir}/init.d/ntpd   \
+    ${sysconfdir}/ntp.conf      \
+"
