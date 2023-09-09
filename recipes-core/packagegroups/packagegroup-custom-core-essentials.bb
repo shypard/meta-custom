@@ -6,5 +6,7 @@ inherit packagegroup
 RDEPENDS:${PN} = "  \
     useradd         \
     ntpd            \
+    os-release      \
+    libconf         \
 "
 
